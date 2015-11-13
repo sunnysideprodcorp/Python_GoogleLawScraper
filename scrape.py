@@ -6,7 +6,6 @@ import random
 import pymongowrapper
 from time import sleep
 import time
-import inspect
 import hashlib
 import argparse
 from collections import Counter
