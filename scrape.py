@@ -11,26 +11,6 @@ import hashlib
 import argparse
 from collections import Counter
 
-# from http://stackoverflow.com/questions/5067604/determine-function-name-from-within-that-function-without-using-traceback
-def whoami():
-    return inspect.stack()[1][3]
-
-# function from https://www.andreas-jung.com/contents/a-python-decorator-for-measuring-the-execution-time-of-methods
-def timeit(method):
-
-    def timed(*args, **kw):
-        ts = time.time()
-        result = method(*args, **kw)
-        te = time.time()
-
-        print '%r (%r, %r) %2.2f sec' % \
-              (method.__name__, args, kw, te-ts)
-        return result
-
-    return timed
-
-
-
 class GoogleLawRequest():
 
     STATES = {
@@ -179,7 +159,7 @@ if __name__ == '__main__':
     max_results = int(math.ceil(int(args['m'])/10))
     wait_time = int(args['w'])
     mongo = pymongowrapper.MongoDB(db = 'GoogleLaw', collection = search_term + time.strftime('_%m%d%Y_')+search_term)
-    ny_contract = GoogleLawRequest(state, search_term, mongo, max_results, wait_time)
-    ny_contract.search()
+    research = GoogleLawRequest(state, search_term, mongo, max_results, wait_time)
+    research.search()
 
 
