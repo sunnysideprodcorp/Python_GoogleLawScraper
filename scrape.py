@@ -25,7 +25,6 @@ class GoogleLawRequest():
     )
 
     def __init__(self, state, search_term, db, max_results, wait_time):
-        print whoami()
         self.state = state.lower()
         self.search_term = search_term
         self.db = db
@@ -42,7 +41,6 @@ class GoogleLawRequest():
         return hashlib.md5(str(random.random()).encode("utf-8")).hexdigest()[:16]
 
     def get_soup(self, url):
-        print whoami()
         opener = urllib2.build_opener()
         gid = self._gen_fake_google_id()
         opener.addheaders = [('User-agent', random.sample(self.USER_AGENT_STRINGS, 1)), ('Cookie', 'GSP=ID=%s:CF=4' % gid )]
@@ -51,7 +49,6 @@ class GoogleLawRequest():
         return soup
 
     def search(self):
-        print whoami()
         # get response object
         BASE_URL = 'https://scholar.google.com/scholar?'
         url = BASE_URL + urllib.urlencode({'hl' : 'en', 'as_sdt' : self.STATES[self.state], 'q' : self.search_term})
@@ -76,19 +73,16 @@ class GoogleLawRequest():
             self.get_case_text(base_url = BASE_URL, **t)
 
     def get_num_results(self, soup):
-        print whoami()
         result = soup.find('div', {'id' : 'gs_ab_md'})
         num = int(result.text.split(" ")[1].replace(",", ""))
         self.num_results = num
         self.max_results = min(int(self.num_results/10), self.max_results)
 
     def get_results_urls(self, url):
-        print whoami()
         max = min(self.max_results, int(self.num_results/10))
         self.result_urls = [{'url':url + '&start='+str(10*i) , 'offset':i} for i in range(1, max)]
 
     def get_case_urls_from_result_url(self, base_url, url, offset):
-        print whoami()
         soup_url = base_url + url
         soup = self.get_soup(url)
         h = soup.find('h3', {'class' : 'gs_rt'})
@@ -114,7 +108,6 @@ class GoogleLawRequest():
                 h = h.findNext('h3', {'class' : 'gs_rt'})
 
     def get_case_text(self, base_url, url, cites_url, cites_count, index):
-        print whoami()
         save_dict = locals()
         save_dict.pop('base_url')
         save_dict.pop('self')
@@ -132,18 +125,11 @@ class GoogleLawRequest():
         self.save_to_db(save_dict)
 
     def prepare_case_text_to_save(self, case_text_string):
-       print whoami()
        word_count = Counter(case_text_string.split(" "))
        return word_count
        
     def save_to_db(self, dic):
-        print whoami()
-        print type(dic)
-        for key, item in dic.items():
-            print "here is key: "+key
-            print type(item)
         self.db.insert(dic, check_keys=False)
-
  
 
 if __name__ == '__main__':
